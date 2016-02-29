@@ -1,0 +1,58 @@
+<apex:page showHeader="false" sidebar="false" standardStyleSheets="false" controller="C_Datetest2">
+  <html> 
+    <head> 
+    <title>My Page</title> 
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.js"></script>
+</head> 
+<body> 
+ 
+<div data-role="page">
+ 
+    <div data-role="header">
+        <h1>ログイン</h1>
+    </div><!-- /header -->
+ 
+    <!--
+    <div data-role="content">   
+           <ul data-role="listview" data-inset="true" data-filter="true">
+          <li><a href="#">Acura</a></li>
+          <li><a href="#">Audi</a></li>
+          <li><a href="#">BMW</a></li>
+          <li><a href="#">Cadillac</a></li>
+          <li><a href="#">Ferrari</a></li>
+           </ul>
+    </div>
+    -->
+    <!-- /content -->
+    
+
+    <apex:form >
+        <!--<apex:actionFunction action="{!doAuthentication}" name="doAuthentication"/>-->
+        <div role="main" class="ui-content">
+            <h3>ログイン</h3>
+            <label for="id">ID</label>
+            <!--<input type="text" name="txt-email" id="txt-email" value="">-->
+            <apex:inputField id="id" value="{!um.ID__c}"/>
+            <label for="password">Password</label>
+            <!--<input type="password" name="txt-password" id="txt-password" value="">-->
+            <apex:inputField id="password" value="{!um.Password__c}"/>
+            <a href="#dlg-invalid-credentials" data-rel="popup" data-transition="pop" data-position-to="window" id="btn-submit" class="ui-btn ui-btn-b ui-corner-all mc-top-margin-1-5" onclick="return authentication();">ログイン</a>
+            <div data-role="popup" id="dlg-invalid-credentials" data-dismissible="false" style="max-width:400px;">
+                <div role="main" class="ui-content">
+                    <h3 class="mc-text-danger">Login Failed</h3>
+                    <p>Did you enter the right credentials?</p>
+                    <div class="mc-text-center"><a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-b mc-top-margin-1-5">OK</a></div>
+                </div>
+            </div>
+        </div><!-- /content -->
+ 
+    </apex:form>
+
+</div><!-- /page -->
+ 
+</body>
+</html>
+</apex:page>

@@ -1,0 +1,6 @@
+<apex:page controller="C_Datetest2">
+  <!-- Begin Default Content REMOVE THIS -->
+  <h1>Congratulations</h1>
+  あいふぉんさん
+  <!-- End Default Content REMOVE THIS -->
+</apex:page>

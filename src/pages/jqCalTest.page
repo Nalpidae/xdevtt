@@ -1,0 +1,39 @@
+<apex:page id="myPage" docType="html-5.0" controller="JqueryDatePicker">
+
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css"></link>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+    <apex:includeScript value="{!$Resource.modernizr}"/>
+    <script>
+      if (!Modernizr.inputtypes.date) { //HTML5のinput要素に対応しているか判定
+        //対応していない
+        document.getElementById('p1').style.display = "none";
+        document.getElementById('p2').style.display = "";
+      } else {
+        //対応している
+        document.getElementById('p1').style.display = "";
+        document.getElementById('p2').style.display = "none";
+      }
+    </script>
+  <apex:form id="myForm">
+    <div id="p1">
+      From Date: <apex:input type="date" id="fromDate" value="{!fromDate}"/> <input type="text" id="fromDatePicker"></input>
+      To Date: <apex:input type="date" id="toDate" value="{!toDate}" style="display:none;" /> 
+    </div>
+    <div id="p2">
+      <input type="text" id="fromDatePicker"></input>
+      <input type="text" id="toDatePicker"></input>
+      <script type="text/javascript">
+          $( "#fromDatePicker" ).datepicker({
+                      altField: "#myPage\\:myForm\\:fromDate",
+                      altFormat: "yy-mm-dd"
+               });
+              $( "#toDatePicker" ).datepicker({
+                      altField: "#myPage\\:myForm\\:toDate",
+                      altFormat: "yy-mm-dd"
+               });
+      </script>
+    </div>
+    <apex:commandButton value="Show Dates" action="{!showDates}" rerender="myPage"/>
+    </apex:form>
+</apex:page>

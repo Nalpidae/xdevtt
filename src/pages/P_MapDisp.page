@@ -1,0 +1,88 @@
+<apex:page controller="C_MapDisp" showHeader="false"  action="{!init}">
+<head>
+<link rel="stylesheet" href="//ajax.aspnetcdn.com/ajax/jquery.mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
+
+<script type="text/javascript" src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.2.min.js"></script>
+<script type="text/javascript" src="//ajax.aspnetcdn.com/ajax/jquery.mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
+<script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false"></script>
+
+<script type="text/javascript">
+  
+    (function($jq) {
+    
+        //jQuery mobileのページ初期表示時のイベント
+        $jq(document).on("pageinit", "#mainPage", function(){
+        
+            geocoder = new google.maps.Geocoder();
+            var address = '東京都千代田区千代田１−１';
+        
+            //チェックイン情報の緯度、経度から位置情報を生成
+            var latlng = new google.maps.LatLng({!checkin.Location__Latitude__s}, {!checkin.Location__Longitude__s});
+            //地図表示用のオプションを生成
+            var opts = {
+                zoom:16,
+                center:latlng,
+                mapTypeId:google.maps.MapTypeId.ROADMAP
+            };
+            //Google Mapの生成
+            var map = new google.maps.Map($jq("#gMap").get(0), opts);
+            
+            //Map上のチェックイン位置にマーカーを生成
+            var marker = new google.maps.Marker({
+                position:latlng,
+                title:"{!checkin.CheckinShaName__c}"
+            });
+            marker.setMap(map);
+        });
+        
+    })(jQuery.noConflict());
+    
+</script>
+</head>
+
+<body>
+<apex:form >
+
+
+
+<div data-role="page" id="mainPage">
+<apex:pageBlock >
+    <apex:pageBlockTable value="{!checkinlist}" var="li">
+        <apex:column value="{!li.name}"/>
+        <apex:column >
+            <apex:commandLink action="{!init}" value="{!li.name}"/>
+            <apex:param value="{!li.Location__Latitude__s}" name="latitude"/>
+            <apex:param value="{!li.Location__Longitude__s}" name="longitude"/>
+        </apex:column>
+        <apex:column value="{!li.CheckinShaName__c}"/>
+        <apex:column value="{!li.Address__c}"/>
+        <apex:column value="{!li.LocationName__c}"/>
+        <apex:column value="{!li.Location__Latitude__s}"/>
+        <apex:column value="{!li.Location__Longitude__s}"/>
+    </apex:pageBlockTable>
+    <apex:outputText value="{!checkin.Location__Latitude__s}"/>
+    <apex:outputText value="{!checkin.Location__Longitude__s}"/>
+    </apex:pageBlock>
+    <!-- <div data-role="header">
+        <a href="#" data-icon="back" data-rel="back">Back</a>
+        <h1>チェックイン詳細</h1>
+    </div>
+    <div data-role="content">
+        
+        <ul data-role="listview" data-inset="true">
+            <li >
+                <p><br/><br/><strong>{!checkin.NickName__c}さん</strong></p>
+                <p>{!checkin.LocationName__c}へのチェックイン</p>
+                <p>{!checkin.Address__c}</p>
+                <p class="ui-li-aside"><apex:outputField value="{!checkin.CreatedDate}" /></p>
+            </li>
+        </ul> -->
+        
+        <div id="gMap" style="width:250px; height:250px; "></div>
+        
+    <!-- </div> -->
+</div>
+</apex:form>
+</body>
+
+</apex:page>

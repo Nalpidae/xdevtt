@@ -1,0 +1,98 @@
+<apex:page >
+<apex:includeScript value="http://static.simile.mit.edu/timeline/api-2.3.0/timeline-api.js?bundle=true"/>
+<apex:includeScript value="http://www.enjoyxstudy.com/javascript/dateformat/dateformat.js"/>
+<style type="text/css">
+.icon-chatter img {
+    height: 12px;
+    width:  12px;
+}
+</style>
+<script>
+var tl;
+function createTimeline() {
+  var eventSource = new Timeline.DefaultEventSource();
+  var theme = Timeline.ClassicTheme.create();
+  var timezone = new Date().getTimezoneOffset() / -60;
+  
+  var bandInfos = [
+    Timeline.createBandInfo({
+        timeZone:       timezone,
+        eventSource:    eventSource,
+        width:          "70%", 
+        theme:          theme,
+        intervalUnit:   Timeline.DateTime.HOUR, 
+        intervalPixels: 100
+    }),
+    Timeline.createBandInfo({
+        timeZone:       timezone,
+        eventSource:    eventSource,
+        overview:       true,
+        width:          "30%", 
+        intervalUnit:   Timeline.DateTime.DAY, 
+        intervalPixels: 200
+    })
+  ];
+  bandInfos[1].syncWith=0;
+  bandInfos[1].highlight = true;
+  tl = Timeline.create(document.getElementById("my-timeline"), bandInfos);
+  var band = tl.getBand(0);
+  band.allDone = function() {refreshChatter();};
+  SimileAjax.DOM.registerEventWithObject(band._div,"mouseup",band,"allDone")
+  Timeline.loadXML("ChatterTLREventXML", function(xml, url) { eventSource.loadXML(xml, url); });
+}
+window.onload = function() { createTimeline();refreshChatter();};
+
+var resizeTimerID = null;
+function resizeTimeline() {
+    if (resizeTimerID == null) {
+        resizeTimerID = window.setTimeout(function() {
+            resizeTimerID = null;
+            tl.layout();
+        }, 500);
+    }
+}
+window.onresize = function() { resizeTimeline(); };
+
+function refreshChatter() {
+    var band = tl.getBand(0);
+    var dateFormat = new DateFormat('yyyy-MM-dd HH:mm:ss');
+    var minDate = band.getMinVisibleDate();
+    var maxDate = band.getMaxVisibleDate();
+    var timezoneStr = getTimezoneStr(maxDate.getTimezoneOffset());
+    var minDateStr = encodeURI(dateFormat.format(minDate) + timezoneStr);
+    var maxDateStr = encodeURI(dateFormat.format(maxDate) + timezoneStr);
+    var url = 'ChatterTLRFeedSnippet?from=' + minDateStr + '&to=' + maxDateStr;
+    SimileAjax.XmlHttp.get(url, onFailure, onSuccess);
+}
+
+function getTimezoneStr(offset) {
+    var hour = Math.abs(offset / 60);
+    var min = offset % 60;
+    var result = '';
+    if (offset <= 0) {
+        result += '+';
+    } else {
+        result += '-';
+    }
+    if (hour < 10) {
+        result += '0';
+    }
+    result += hour;
+    result += ':';
+    if (min < 10) {
+        result += '0';
+    }
+    result += min;
+    return result;
+}
+function onSuccess(obj) {
+    document.getElementById("my-chatter").innerHTML = obj.responseText;
+}
+function onFailure(obj) {
+    alert('failed to call');
+}
+</script>
+<div id="my-timeline" style="height: 200px; border: 1px solid #aaa">
+This application does not support Internet Explorer.</div>
+<div id="my-chatter"></div>
+</apex:page>

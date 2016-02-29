@@ -1,0 +1,7 @@
+<apex:page controller="C_TestObj" showHeader="false" sidebar="false" setup="false">
+
+<apex:outputPanel >
+<apex:outputField value="{!ListTestObj[0].tt8__TestRichText__c}"/>
+</apex:outputPanel>
+
+</apex:page>

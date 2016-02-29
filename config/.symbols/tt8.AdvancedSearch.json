@@ -1,0 +1,299 @@
+{
+    "properties": [
+        {
+            "modifiers": [
+                "public"
+            ], 
+            "name": "Sf", 
+            "visibility": "PUBLIC", 
+            "references": [], 
+            "location": {
+                "column": 19, 
+                "line": 2
+            }, 
+            "type": "String"
+        }, 
+        {
+            "modifiers": [
+                "public"
+            ], 
+            "name": "Selectedobject", 
+            "visibility": "PUBLIC", 
+            "references": [], 
+            "location": {
+                "column": 19, 
+                "line": 3
+            }, 
+            "type": "String"
+        }, 
+        {
+            "modifiers": [
+                "public"
+            ], 
+            "name": "sobjList", 
+            "visibility": "PUBLIC", 
+            "references": [], 
+            "location": {
+                "column": 31, 
+                "line": 4
+            }, 
+            "type": "LIST"
+        }, 
+        {
+            "modifiers": [
+                "public"
+            ], 
+            "name": "cobjList", 
+            "visibility": "PUBLIC", 
+            "references": [], 
+            "location": {
+                "column": 31, 
+                "line": 5
+            }, 
+            "type": "LIST"
+        }, 
+        {
+            "modifiers": [
+                "public"
+            ], 
+            "name": "objfieldlist", 
+            "visibility": "PUBLIC", 
+            "references": [], 
+            "location": {
+                "column": 31, 
+                "line": 6
+            }, 
+            "type": "LIST"
+        }
+    ], 
+    "externalReferences": [], 
+    "innerClasses": [], 
+    "interfaces": [], 
+    "constructors": [
+        {
+            "modifiers": [
+                "public"
+            ], 
+            "name": "AdvancedSearch", 
+            "parameters": [], 
+            "visibility": "PUBLIC", 
+            "references": [], 
+            "location": {
+                "column": 12, 
+                "line": 8
+            }, 
+            "type": null
+        }
+    ], 
+    "namespace": "tt8", 
+    "name": "AdvancedSearch", 
+    "tableDeclaration": {
+        "type": "AdvancedSearch", 
+        "modifiers": [
+            "public", 
+            "with sharing"
+        ], 
+        "references": [], 
+        "location": {
+            "column": 27, 
+            "line": 1
+        }, 
+        "name": "AdvancedSearch"
+    }, 
+    "key": "01p10000001CH67AAG", 
+    "variables": [
+        {
+            "type": "LIST", 
+            "modifiers": [], 
+            "references": [], 
+            "location": {
+                "column": 34, 
+                "line": 14
+            }, 
+            "name": "obj"
+        }, 
+        {
+            "type": "LIST", 
+            "modifiers": [], 
+            "references": [], 
+            "location": {
+                "column": 28, 
+                "line": 15
+            }, 
+            "name": "options"
+        }, 
+        {
+            "type": "SObjectType", 
+            "modifiers": [], 
+            "references": [], 
+            "location": {
+                "column": 32, 
+                "line": 17
+            }, 
+            "name": "st"
+        }, 
+        {
+            "type": "LIST", 
+            "modifiers": [], 
+            "references": [], 
+            "location": {
+                "column": 28, 
+                "line": 41
+            }, 
+            "name": "options"
+        }, 
+        {
+            "type": "LIST", 
+            "modifiers": [], 
+            "references": [], 
+            "location": {
+                "column": 34, 
+                "line": 51
+            }, 
+            "name": "obj"
+        }, 
+        {
+            "type": "SObjectType", 
+            "modifiers": [], 
+            "references": [], 
+            "location": {
+                "column": 32, 
+                "line": 54
+            }, 
+            "name": "st"
+        }, 
+        {
+            "type": "LIST", 
+            "modifiers": [], 
+            "references": [], 
+            "location": {
+                "column": 34, 
+                "line": 80
+            }, 
+            "name": "obj"
+        }, 
+        {
+            "type": "SObjectType", 
+            "modifiers": [], 
+            "references": [], 
+            "location": {
+                "column": 32, 
+                "line": 83
+            }, 
+            "name": "st"
+        }, 
+        {
+            "type": "LIST", 
+            "modifiers": [], 
+            "references": [], 
+            "location": {
+                "column": 30, 
+                "line": 91
+            }, 
+            "name": "tmp"
+        }, 
+        {
+            "type": "SObjectType", 
+            "modifiers": [], 
+            "references": [], 
+            "location": {
+                "column": 25, 
+                "line": 108
+            }, 
+            "name": "objTyp"
+        }, 
+        {
+            "type": "DescribeSObjectResult", 
+            "modifiers": [], 
+            "references": [], 
+            "location": {
+                "column": 31, 
+                "line": 110
+            }, 
+            "name": "objDef"
+        }, 
+        {
+            "type": "Map", 
+            "modifiers": [], 
+            "references": [], 
+            "location": {
+                "column": 35, 
+                "line": 111
+            }, 
+            "name": "fields"
+        }, 
+        {
+            "type": "SObjectField", 
+            "modifiers": [], 
+            "references": [], 
+            "location": {
+                "column": 26, 
+                "line": 115
+            }, 
+            "name": "f"
+        }
+    ], 
+    "id": "01p10000001CH67AAG", 
+    "methods": [
+        {
+            "modifiers": [
+                "public"
+            ], 
+            "name": "getSelectedobjnames", 
+            "parameters": [], 
+            "visibility": "PUBLIC", 
+            "references": [], 
+            "location": {
+                "column": 31, 
+                "line": 12
+            }, 
+            "returnType": "LIST", 
+            "type": null
+        }, 
+        {
+            "modifiers": [
+                "public"
+            ], 
+            "name": "getSelectedobjFields", 
+            "parameters": [], 
+            "visibility": "PUBLIC", 
+            "references": [], 
+            "location": {
+                "column": 31, 
+                "line": 35
+            }, 
+            "returnType": "LIST", 
+            "type": null
+        }, 
+        {
+            "modifiers": [
+                "public"
+            ], 
+            "name": "createLinks", 
+            "parameters": [], 
+            "visibility": "PUBLIC", 
+            "references": [], 
+            "location": {
+                "column": 17, 
+                "line": 77
+            }, 
+            "returnType": "void", 
+            "type": null
+        }, 
+        {
+            "modifiers": [
+                "public"
+            ], 
+            "name": "createFields", 
+            "parameters": [], 
+            "visibility": "PUBLIC", 
+            "references": [], 
+            "location": {
+                "column": 17, 
+                "line": 106
+            }, 
+            "returnType": "void", 
+            "type": null
+        }
+    ]
+}

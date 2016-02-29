@@ -1,0 +1,58 @@
+<apex:page standardController="Account" extensions="InlineEdit" >
+    <apex:form >
+        <apex:inlineEditSupport showOnEdit="saveButton,cancelInlineEditButton"
+            hideOnEdit="cancelButton" event="onclick"
+            resetFunction="resetInlineEdit"/>
+        <apex:pageBlock mode="detail">
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!save}" id="saveButton" value="保存" />
+                <apex:commandButton action="{!cancel}" id="cancelButton" value="キャンセル" />
+                <apex:commandButton onclick="resetInlineEdit();" id="cancelInlineEditButton" value="キャンセル" style="display:none;"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection >
+                <apex:outputField value="{!account.Name}" rendered="{!account.Id != null}"/>
+                <apex:outputField value="{!account.Type}" rendered="{!account.Id != null}"/>
+                <apex:outputField value="{!account.Phone}" rendered="{!account.Id != null}"/>
+                <apex:outputField value="{!account.Fax}" rendered="{!account.Id != null}"/>
+                <apex:outputField value="{!account.AnnualRevenue}" rendered="{!account.Id != null}"/>
+                <apex:outputField value="{!account.NumberOfEmployees}" rendered="{!account.Id != null}"/>
+                <apex:inputField value="{!account.Name}" rendered="{!account.Id = null}"/>
+                <apex:inputField value="{!account.Type}" rendered="{!account.Id = null}"/>
+                <apex:inputField value="{!account.Phone}" rendered="{!account.Id = null}"/>
+                <apex:inputField value="{!account.Fax}" rendered="{!account.Id = null}"/>
+                <apex:inputField value="{!account.AnnualRevenue}" rendered="{!account.Id = null}"/>
+                <apex:inputField value="{!account.NumberOfEmployees}" rendered="{!account.Id = null}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="1">
+                <apex:outputField value="{!account.Website}" rendered="{!account.Id != null}"/>
+                <apex:outputField value="{!account.Description}" rendered="{!account.Id != null}"/>
+                <apex:inputField value="{!account.Website}" rendered="{!account.Id = null}"/>
+                <apex:inputField value="{!account.Description}" rendered="{!account.Id = null}"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        <apex:pageBlock title="{!$ObjectType.Contact.labelPlural}" mode="detail">
+            <apex:pageBlockTable value="{!contacts}" var="c" styleClass="detailList">
+                <apex:column value="{!c.LastName}" width="{!CONTACT_COLUMN_WIDTH}" rendered="{! c.LastName != null}" headerValue="{!$ObjectType.Contact.fields.LastName.Label}"/>
+                <apex:column value="{!c.FirstName}" width="{!CONTACT_COLUMN_WIDTH}" rendered="{! c.FirstName != null}" headerValue="{!$ObjectType.Contact.fields.FirstName.Label}"/>
+                <apex:column value="{!c.Email}" width="{!CONTACT_COLUMN_WIDTH}" rendered="{! c.Email != null}" headerValue="{!$ObjectType.Contact.fields.Email.Label}"/>
+                <apex:column value="{!c.Phone}" width="{!CONTACT_COLUMN_WIDTH}" rendered="{! c.Phone != null}" headerValue="{!$ObjectType.Contact.fields.Phone.Label}"/>
+                <apex:column value="{!c.Fax}" width="{!CONTACT_COLUMN_WIDTH}" rendered="{! c.Fax != null}" headerValue="{!$ObjectType.Contact.fields.Fax.Label}"/>
+                <apex:column rendered="{! c.LastName = null}" headerValue="{!$ObjectType.Contact.fields.LastName.Label}">
+                    <apex:inputField value="{!c.LastName}" required="false" />
+                </apex:column>
+                <apex:column rendered="{! c.FirstName = null}" headerValue="{!$ObjectType.Contact.fields.FirstName.Label}">
+                    <apex:inputField value="{!c.FirstName}"/>
+                </apex:column>
+                <apex:column rendered="{! c.Email = null}" headerValue="{!$ObjectType.Contact.fields.Email.Label}">
+                    <apex:inputField value="{!c.Email}"/>
+                </apex:column>
+                <apex:column rendered="{! c.Phone = null}" headerValue="{!$ObjectType.Contact.fields.Phone.Label}">
+                    <apex:inputField value="{!c.Phone}"/>
+                </apex:column>
+                <apex:column rendered="{! c.Fax = null}" headerValue="{!$ObjectType.Contact.fields.Fax.Label}">
+                    <apex:inputField value="{!c.Fax}"/>
+                </apex:column>
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

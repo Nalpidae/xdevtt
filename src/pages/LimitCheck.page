@@ -1,0 +1,17 @@
+<apex:page controller="LimitCheck">
+    <apex:pageBlock title="Limits">
+        <apex:pageBlockTable value="{!dList}" var="item">
+            <!--<apex:column value="{!item.p1}"/>
+            <apex:column value="{!item.p2}"/>-->
+            <apex:column headerValue="Method">
+                <apex:outputText value="{!item.p1}" />
+            </apex:column>
+            <apex:column headerValue="Limit">
+                <apex:outputText value="{!item.p3}" />
+            </apex:column>
+            <apex:column headerValue="Detail">
+                <apex:outputText value="{!item.p2}" />
+            </apex:column>
+        </apex:pageBlockTable>
+    </apex:pageBlock>
+</apex:page>

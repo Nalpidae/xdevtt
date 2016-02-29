@@ -1,0 +1,6 @@
+<apex:page standardController="TestX5__c">
+  <!-- Begin Default Content REMOVE THIS -->
+  <h1>ページレイアウト割り当てテスト用ページ</h1>
+  ページレイアウト割り当てテスト用ページ
+  <!-- End Default Content REMOVE THIS -->
+</apex:page>

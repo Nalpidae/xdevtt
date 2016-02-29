@@ -1,0 +1,57 @@
+<apex:page action="{!redirect}" controller="C_Datetest2" id="page">
+
+<script src="/soap/ajax/33.0/connection.js" type="text/javascript"></script>
+<script src="/soap/ajax/33.0/apex.js" type="text/javascript"></script>
+
+<meta name="viewport" content="width=device-width, user-scalable=no"/>
+
+<style type="text/css">
+    div.message ul li {
+         list-style:none;
+    }
+</style>
+
+
+<script type="text/javascript">
+    beenFocused = true;
+</script>
+
+<apex:form id="form">
+aaa
+    <apex:pageBlock >
+    <!--<apex:inputField value="{!chkin.RegDate__c}"/>-->
+    <apex:inputText id="date" value="{!createDate}" onfocus="DatePicker.pickDate(false, 'page:form:pb:date' , false);" />
+    <apex:pageMessages />
+    <apex:commandButton value="今日日付かどうかチェックします" action="{!check}"/>
+    <apex:outputtext value="すてーたす" style="color:#FF0000; font-weight:bold; font-size:16pt;" />
+    </apex:pageBlock>
+    
+    
+    <!--<apex:repeat value="{!largeList}" var="l">
+        <apex:outputText value="{!l}" />
+    </apex:repeat>-->
+    
+    <!--<apex:outputText value="{!largeList.size}" />-->
+    
+    <!--<select style="width:120px; clip:rect(0px,120px,22px,100px); position:absolute;" onchange="select(this);">
+        <option>test</option>
+        <option>test1</option>
+        <option>test2</option>
+    </select>-->
+    <apex:inputField value="{!chkin.SelectListField__c}" style="width:120px; clip:rect(0px,120px,22px,100px); position:absolute;" onchange="select(this);"/>
+    <input id="t1" type="text" style="width:100px;margin-right:20px;"/>
+    <!--<apex:inputText id="t1" style="width:100px;margin-right:20px;"/>-->
+    bbb
+    <script language="javascript">
+        function select(obj){
+          document.getElementById("t1").value=obj.options[obj.selectedIndex].text;
+        }
+    </script>
+    
+    <!--<apex:commandButton value="soqlTest" onclick="return soqlTest();" rerender=""/>-->
+    
+    
+    
+</apex:form>
+    
+</apex:page>

@@ -1,0 +1,691 @@
+<apex:page >
+
+    <link href="/dCSS/Theme2/ja/common.css" type="text/css"
+    media="handheld,print,projection,screen,tty,tv" rel="stylesheet"></link>
+<link href="/dCSS/Theme2/ja/custom.css" type="text/css"
+    media="handheld,print,projection,screen,tty,tv" rel="stylesheet"></link>
+<title>Demo Data Uploader</title>
+<style type="text/css">
+#msgDialog {
+    padding: 20px 40px;
+    width: 400px;
+    text-align: center;
+    font-size: larger;
+    background-color: #ffa;
+    border: 1px solid #aa5;
+}
+</style>
+<script type="text/javascript" src="/soap/ajax/31.0/connection.js"></script>
+<!--<script type="text/javascript" src="/js/dojo/0.4.1/dojo.js"></script>-->
+<script>
+    dojoConfig= {
+        has: {
+            "dojo-firebug": true
+        },
+        parseOnLoad: false,
+        foo: "bar",
+        async: true
+    };
+</script>
+<script src="//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dojo/dojo.js"></script>
+<!--<script type="text/javascript">
+dojo.require("dojo.widget.Dialog");  
+  </script>-->
+<script>
+// Require the registry, parser, Dialog, and wait for domReady
+require(["dijit/registry", "dojo/parser", "dojo/json", "dojo/_base/config", "dijit/Dialog", "dojo/domReady!"]
+, function(registry, parser, JSON, config) {
+    // Explicitly parse the page
+    parser.parse();
+    // Find the dialog
+    var dialog = registry.byId("msgDialog");
+    // Set the content equal to what dojo.config is
+    dialog.set("content", "<pre>" + JSON.stringify(config, null, "\t") + "```");
+    // Show the dialog
+    dialog.show();
+});
+</script>
+<script type="text/javascript">
+/*
+ * Overriding Array prototype (for convenience)
+ * 
+ */
+Array.prototype.map = function(iterator, thisObj) {
+  for (var i=0,len=this.length,ret=[];i<len;i++) {
+    ret.push(iterator.call(thisObj, this[i], i, this));
+  }
+  return ret;
+}
+
+Array.prototype.forEach = function(iterator, thisObj) {
+  for (var i=0,len=this.length;i<len;i++) {
+    iterator.call(thisObj, this[i], i, this)
+  }
+}
+
+Array.prototype.filter = function(iterator, thisObj) {
+  for (var i=0,len=this.length,ret=[];i<len;i++) {
+    if (iterator.call(thisObj, this[i], i, this)) ret.push(this[i]);
+  }
+  return ret;
+}
+
+Array.prototype.find = function(iterator, thisObj) {
+  for (var i=0,len=this.length;i<len;i++) {
+    if (iterator.call(thisObj, this[i], i, this)) return this[i];
+  }
+  return;
+}
+
+Array.prototype.inject = function(memo, iterator) {
+  this.forEach(function(value, index) {
+    memo = iterator(memo, value, index);
+  });
+  return memo;
+}
+
+Array.prototype.flatten = function() {
+  return this.inject([], function(array, value) {
+    return array.concat(value && value.constructor == Array ?
+                        value.flatten() : 
+                        [value]);
+  })
+}
+
+/*
+ * Import other org data, exported from salesforce.com (via DataLoader) This
+ * class automatically resolves inter-record dependencies.
+ */
+var SerializedUploader = function() {
+  this.init();
+}
+
+SerializedUploader.prototype = {
+
+  init : function() {
+    this.sobject = {};
+
+    this.idmap = {};
+    this.target = {};
+
+    this.successes = [];
+    this.failures = [];
+
+    this.listeners = [];
+  }
+  ,
+
+  fireEvent : function(event) {
+    this.listeners.forEach(function(lis) { lis['on'+event] && lis['on'+event]() });
+  }
+  ,
+
+  addListener : function(listener) {
+    this.listeners.push(listener);
+  }
+  ,
+
+  describe : function(table) {
+    if (this.sobject[table] && this.sobject[table].described) {
+      return this.sobject[table].described;
+    } else {
+      this.sobject[table] = this.sobject[table] || {};
+      return (this.sobject[table].described = sforce.connection.describeSObject(table));
+    }
+  }
+  ,
+
+  getFieldDef : function(table, fname) {
+    return this.describe(table).fields.find(function(field) { 
+      return field.name.toUpperCase() == fname.toUpperCase() 
+    });
+  }
+  ,
+
+  getType : function(table, fname) {
+    var f = this.getFieldDef(table, fname);
+    return f ? f.type : null;
+  }
+  ,
+
+  setUploadingTarget : function(ids) {
+    var _this = this;
+    ids.forEach(function(id) { _this.target[id] = true });
+  }
+  ,
+
+  isTargetedUpload : function() {
+    for (var id in this.target) {
+      return true;
+    }
+    return false;
+  }
+  ,
+
+  upload : function() {
+    var _this = this;
+    var uploadings = []; // array of sobj and recordId (old) pair
+
+    for (table in this.sobject) {
+      var records = this.filterUploadableRecords(table)
+      uploadings = uploadings.concat(
+                     records.map(function(record) {
+                       return _this.convertToSObjectPair(table, record) 
+                     })
+                   );
+    }
+
+    if (uploadings.length > 0) {
+      this.uploadSObjects(uploadings, function() {
+        // event notification;
+        _this.fireEvent('UploadProgress');
+        // recursive call
+        _this.upload();
+      });
+    } else {
+      this.fireEvent('Complete');
+    }
+  }
+  ,
+
+  filterUploadableRecords : function(table) {
+    var _this = this;
+
+    var records = this.sobject[table].records;
+    var header = this.sobject[table].header;
+
+    // search id and reference id column index
+    var idIndex;
+    var ridIndexes = [];
+    header.forEach(function(h, i) {
+      var type = _this.getType(table, h);
+      if (type=='id') {
+        idindex = i;
+      } else if (type=='reference') {
+        ridIndexes.push(i);
+      }
+    });
+
+    var uploadables = [];
+    var waitings = [];
+
+    var targeted = this.isTargetedUpload();
+
+    records.forEach(function(record) {
+      var id = record[idindex];
+      var upOK = !targeted || _this.target[id];
+
+      ridIndexes.forEach(function(i) {
+        var rid = record[i];
+        if (rid.length>0) {
+          if (targeted) { 
+            if (_this.target[rid]) { // if parent record is in targets
+              _this.target[id] = true; // child record should be in targets,
+                                        // also.
+            } else if (_this.target[id]) { // if child record is in targets
+              _this.target[rid] = true; // parent record should be in targets,
+                                        // also.
+            }
+          }
+          if (!_this.idmap[rid]) { // if parent record not uploaded
+            upOK = false;
+          }
+        }
+      })
+
+      if (upOK) uploadables.push(record);
+      else waitings.push(record);
+
+    })
+
+    this.sobject[table].records = waitings;
+    return uploadables;
+
+  }
+  ,
+
+  convertToSObjectPair : function(table, record) {
+    var _this = this;
+
+    var sobj = new sforce.SObject(table);
+    var id;
+
+    record.forEach(function(value, i) {
+      var fieldDef = _this.getFieldDef(table, _this.sobject[table].header[i]);
+      if (fieldDef!=null) {
+        var creatable = fieldDef.getBoolean('createable');
+        switch (fieldDef.type) {
+          case 'id' :
+            id = value;
+            break;
+          case 'int' :
+            var num = parseInt(value);
+            if (!isNaN(num) && creatable) sobj[fieldDef.name] = num;
+            break;
+          case 'double' :
+          case 'currency' :
+          case 'percent' :
+            var fnum = parseFloat(value);
+            if (!isNaN(fnum) && creatable) sobj[fieldDef.name] = fnum;
+            break;
+          case 'date' :
+          case 'datetime' :
+            if (record[i].length>0 && creatable) sobj[fieldDef.name] = value;
+            break;
+          case 'reference' :
+            if (creatable) sobj[fieldDef.name] = _this.idmap[value];
+            break;
+          default :
+            if (creatable) sobj[fieldDef.name] = value;
+            break;
+        }
+      }
+    });
+
+    return { id : id, sobject : sobj };
+  }
+  ,
+
+
+  uploadSObjects : function(uploadings, next) {
+    var _this = this;
+
+    var sobjects = uploadings.map(function(r) { return r.sobject });
+
+    bulkInsert(sobjects, function(rets) {
+      rets.forEach(function (ret, i) {
+        if (ret.getBoolean('success')) {
+          // register map info of oldid -> newid
+          _this.idmap[uploadings[i].id] = ret.id;
+          _this.successes.push([uploadings[i].id, ret.id]);
+        } else {
+          _this.failures.push([uploadings[i].id, ret]);
+        }
+      });
+
+      // continuation call
+      next();
+    })
+
+    // bulk create function for over 200 records
+    // update 2009/04/01 when sobject type is changed, change bulk set
+    function bulkInsert(sobjects, callback) {
+
+         var currentType ='';
+         var i = 0;
+         var ret1 = new Array();
+         var sobjectsSubSet = new Array();
+         while(i < sobjects.length){
+            if(currentType ==''){
+                currentType = sobjects[i].type;
+            }else if(sobjects[i].type != currentType || i == sobjects.length -1 || sobjectsSubSet.length >= 200){
+                var ret2 = sforce.connection.create(sobjectsSubSet);
+                ret1 = ret1.concat(ret2);
+                sobjectsSubSet = new Array();
+                currentType = sobjects[i].type;
+            }
+            sobjectsSubSet.push(sobjects[i]);
+            i++;
+        }
+        callback(ret1);
+    }
+
+    
+  }
+  ,
+
+  loadCSV : function(table, csvtext) {
+    var csvp = new CSVParser(csvtext);
+    this.sobject[table] = this.sobject[table] || {};
+    this.sobject[table].header = [];
+    this.sobject[table].records = [];
+    var token;
+    while ((token = csvp.nextToken())!=null) {
+      this.sobject[table].header.push(token);
+    }
+    while (csvp.nextLine()) {
+      var record = [];
+      while ((token = csvp.nextToken())!=null) {
+        record.push(token);
+      }
+      this.sobject[table].records.push(record);
+    }
+    
+    // pre-fetch describe data
+    this.describe(table);
+  }
+
+}
+
+
+
+var CSVParser = function(text) {
+  this.text = text;
+  this.cursor = 0;
+}
+
+CSVParser.prototype = {
+  nextToken : function() {
+    var cell;
+    var dquoted = false;
+    var firstChar = this.text.charAt(this.cursor);
+    if (firstChar == '' || firstChar == '\n') return null;
+    if (firstChar == '"') dquoted = true;
+    if (dquoted) {
+      var dq = this.cursor;
+      while(true) {
+        dq++;
+        dq = this.text.indexOf('"', dq);
+        if (dq<0 || this.text.charAt(dq+1)!='"') break;
+        else dq++;
+      }
+      if (dq>=0) {
+        var delim = this.text.charAt(dq+1);
+        cell = this.text.substring(this.cursor, dq+1);
+        this.cursor = dq + (delim == ',' ? 2 : 1);
+      } else {
+        cell = this.text.substring(this.cursor);
+        this.cursor = this.text.length;
+      }
+      return cell.replace(/""/g,'"').replace(/^"/,'').replace(/"$/,'');
+    } else {
+      var comma = this.text.indexOf(',', this.cursor);
+      var ret = this.text.indexOf('\n', this.cursor);
+      var pivot = comma > 0 && ret > 0 ? (comma < ret ? comma : ret) :
+                  comma > 0 ? comma : 
+                  ret > 0 ? ret : this.text.length;
+      cell = this.text.substring(this.cursor, pivot)
+      this.cursor = pivot;
+      if (comma==pivot) this.cursor++;
+      return cell;
+    }
+  }
+  ,
+
+  nextLine : function() {
+    for(var c = this.text.charAt(this.cursor);
+        c == '\n' || c == '\r';
+        c = this.text.charAt(++this.cursor))
+      ;
+    if (this.cursor == this.text.length) return false
+    else return true;
+  }
+}
+</script>
+
+<script type="text/javascript">
+
+var folderId;
+
+function createXMLHttpRequest() {
+  if (window.XMLHttpRequest) {
+    return new XMLHttpRequest()
+  } else if (window.ActiveXObject) {
+    try {
+      return new ActiveXObject("Msxml2.XMLHTTP")
+    } catch (e) {
+      try {
+        new ActiveXObject("Microsoft.XMLHTTP")
+      } catch (e2) {
+        return null
+      }
+    }
+  } else {
+    return null
+  }
+}
+
+function downloadCSV(path, callback) {
+  showMessage('インポートするデータファイルを取り込み中...');
+  var req = createXMLHttpRequest();
+  req.open('GET', path, true);
+  req.onreadystatechange = function() {
+    if (req.readyState == 4 && req.status == 200) {
+      var csv = req.responseText;
+      callback(csv);
+    }
+  };
+  req.send(null);
+}
+
+var su = new SerializedUploader();
+
+function importData() {
+  clearMessage();
+  if (confirm('データのインポートを開始します。\n'+
+              'すでにデータがインポートされている場合は重複して登録される可能性があります。\n'+
+              'よろしいですか？')) {
+    downloadCSVDocs();
+  }
+}
+
+function downloadCSVDocs() {
+  showMessage('インポートするデータファイルを取り込み中...');
+  folderId = sforce.connection.query(
+   "SELECT Id FROM Folder WHERE developername = 'ImportingCSVDataFolder' limit 1").getArray("records")[0].Id;
+  var docs = sforce.connection.query(
+    "SELECT Id, Name FROM Document WHERE FolderId = '"+folderId+"' AND Name like '%.csv'"
+  ).getArray('records').map(function(r){
+    return { name : r.Name, 
+             path : '/servlet/servlet.FileDownload?file='+r.Id }
+  });
+
+  (function() {
+     var call = arguments.callee;
+     var doc = docs.pop();
+     if (doc) {
+       var table = doc.name.replace(/\.csv$/,'');
+       downloadCSV(doc.path, function(csvtext) {
+         su.loadCSV(table, csvtext);
+         call();
+       })
+     } else {
+       uploadData();
+     }
+  })();
+}
+  
+function uploadData() {
+  su.addListener({
+    onUploadProgress : function() {
+      showMessage(su.successes.length+'件インポート完了');
+    }
+    ,
+    onComplete : function() {
+      adjustData();
+    }
+  });
+  su.upload();
+}
+
+function adjustData() {
+  adjustTask(function() {
+    adjustEvent(function() {
+      adjustOpportunity(function() {
+         clearMessage();
+         alert('データのインポートが完了しました');
+      })
+    })
+  })
+}
+
+function adjustTask(next) {
+  showMessage('ToDoデータを調整中...');
+  
+  var pivot = 1176390000000; // 2007-04-13T00:00:00+0900
+  var today = new Date();
+  today.setHours(0);
+  today.setMinutes(0);
+  today.setSeconds(0);
+  today.setMilliseconds(0);
+  var td = today.getTime();
+
+  adjustDateFields('Task', [ 'ActivityDate' ], pivot, td, next);
+}
+
+function adjustEvent(next) {
+  showMessage('行動データを調整中...');
+
+  var pivot = 1177254000000; // 2007-04-23T00:00:00+0900
+  var md = new Date();
+  md.setHours(0);
+  md.setMinutes(0);
+  md.setSeconds(0);
+  md.setMilliseconds(0);
+  md.setDate(md.getDate()-md.getDay()+1);
+  md = md.getTime();
+
+  adjustDateFields('Event', [ 'ActivityDateTime' ], pivot, md, next);
+}
+
+
+function adjustOpportunity(next) {
+  showMessage('商談データを調整中...');
+  
+  var pivot = 1177254000000; // 2007-04-23T00:00:00+0900
+  var md = new Date();
+  md.setHours(0);
+  md.setMinutes(0);
+  md.setSeconds(0);
+  md.setMilliseconds(0);
+  md.setDate(md.getDate()-md.getDay()+1);
+  md = md.getTime();
+  
+  adjustDateFields('Opportunity', [ 'CloseDate' ], pivot, md, next);
+}
+
+
+function adjustDateFields(table, dtfields, pivot, now, next) {
+
+  var ids = su.successes.map(function(id){ return id[1] })
+                        .filter(function(id) {
+                           return id.match(new RegExp('^'+su.describe(table).keyPrefix))
+                         });
+  sforce.connection.update(
+      sforce.connection.retrieve(
+        "Id,"+dtfields.join(','), table, ids
+      ).map(function(r) {
+        dtfields.forEach(function(field) {
+          var d = su.getFieldDef(table,field).type=='datetime' ? 
+                  r.getDateTime(field) : 
+                  r.getDate(field);
+          d = d ? d.getTime() : null;
+          if (d) r[field] = new Date(now + (d-pivot));
+        })
+        return r;
+      })
+      ,
+      next 
+    )
+}
+
+
+function showMessage(message) {
+  dijit.byId('msgDialog').show();
+  //dojo.byId('message').innerHTML = message;
+  require(["dojo"], function(dojo){
+    dojo.byId('message').innerHTML = message;
+  });
+
+}
+
+function clearMessage() {
+  dijit.byId('msgDialog').hide();
+  //dojo.byId('message').innerHTML = '';
+  require(["dojo"], function(dojo){
+    dojo.byId('message').innerHTML = '';
+  });
+}
+
+function disableButton() {
+  document.getElementById('importButton').disabled = true;
+}
+
+function enableButton() {
+  document.getElementById('importButton').disabled = false;
+}
+
+/*
+ * This method will not be invoked from official interface, for development
+ * usage only.
+ */
+function truncateAllTables() {
+  var tables = sforce.connection.query(
+    "SELECT Id, Name FROM Document WHERE FolderId = '"+folderId+"' AND Name like '%.csv'"
+  ).getArray('records').map(function(r){
+    return r.Name.replace(/\.csv$/,'');
+  });
+
+  if (confirm('以下のテーブル内のレコードを削除します : \n'+tables.join(', '))) {
+    var rets = tables.map(function(table) {
+      return (function(ids) {
+        return (ids.length>200 ? arguments.callee(ids.slice(200)) : []).concat(
+                  sforce.connection.deleteIds(ids.slice(0,200))
+               );
+      })
+      (
+            (function(qr) {
+            return qr.getArray('records').concat(
+                     qr.getBoolean('done') ? [] : 
+                     arguments.callee(sforce.connection.queryMore(qr.queryLocator))
+                   );
+          })
+          (sforce.connection.query("SELECT Id FROM "+table))
+          .map(function(r) { return r.Id })
+          );
+    }).flatten();
+    var snum = rets.filter(function(r){return r.getBoolean('success')}).length;
+    alert(snum+' 件のレコードが削除されました (失敗 ：'+(rets.length-snum)+' 件)');
+  }
+}
+
+function downloadCSV(path, callback) {
+  showMessage('インポートするデータファイルを取り込み中...');
+  var req = createXMLHttpRequest();
+  var length = path.length;
+  var id = path.substring(length - 18);
+  var sid = document.cookie.split('sid=')[1].split(';')[0];
+  path = '/services/data/v20.0/sobjects/Document/' + id + '/Body';
+  req.open('GET', path, true);
+  req.setRequestHeader('Authorization', 'OAuth ' + sid);
+  req.onreadystatechange = function() {
+    if (req.readyState == 4 && req.status == 200) {
+      var csv = req.responseText;
+      callback(csv);
+    }
+  };
+  req.send(null);
+}
+  </script>
+
+  <div class="bPageTitle">
+<div class="ptBody secondaryPalette">
+<div class="content" style="padding-left: 10px"><img
+    title="ルックアップ" class="pageTitleIcon" alt="ルックアップ" src="/s.gif" />
+<h1 class="pageType noSecondHeader">データのインポート</h1>
+<div class="blank"></div>
+</div>
+</div>
+</div>
+
+<p>お使いのSalesforce組織内に、サンプルデータをインポートします。<br/>
+サンプルデータには取引先、取引先責任者、商談、ケース、リード、行動およびToDoのレコード情報が含まれており、
+それぞれレコード間の関連が保持された状態で自動的にアップロードされます。</p>
+<p>なお、データのインポート完了後はアプリケーションをアンインストールしてもかまいません。<br/>
+アンインストールは「設定＞アプリケーションの設定＞Exchange＞インストール済みアプリケーション」 から行うことができます。</p>
+
+<input class="btn" id="importButton" type="button" value="インポート開始"
+    onclick="importData()"/>
+
+<!-- 
+  <input type="button" value="既存データの削除" onclick="truncateAllTables()">
+  -->
+
+<!--<div dojoType="Dialog" id="msgDialog" widgetId="msgDialog"
+    bgColor="white">-->
+<div dojoType="dijit/Dialog" id="msgDialog" widgetId="msgDialog"
+  bgColor="white">
+<div id="message"></div>
+<img src="/img/waiting_dots.gif"/></div>
+
+</apex:page>

@@ -1,0 +1,59 @@
+<apex:page id="myPage" docType="html-5.0" controller="JqueryDatePicker">
+
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+    <apex:includeScript value="{!$Resource.modernizr}"/>
+    <apex:includeScript value="{!$Resource.calmod}"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/i18n/jquery.ui.datepicker-ja.js"></script>
+    <apex:stylesheet value="{!$Resource.datepicker}"/>
+    <apex:stylesheet value="{!$Resource.normalize}"/>
+
+<style>
+.ui-datepicker-prev, .ui-datepicker-next {
+  background-image: url('{!$Resource.arrow}');
+}
+.ui-datepicker-div {
+  background: url('{!$Resource.datapickerbg}') repeat 0 0 #555;
+}
+</style>
+
+  <apex:form id="myForm">
+  <div id="datepicker">
+      From Date: <apex:input type="date" id="fromDate" value="{!fromDate}"/> <input type="text" id="fromDatePicker"></input>
+      To Date: <apex:input type="date" id="toDate" value="{!toDate}" /> <input type="text" id="toDatePicker"></input>
+      <script type="text/javascript">
+          $( "#fromDatePicker" ).datepicker({
+                      showOtherMonths: true,
+                      dayNamesMin: ['日', '月', '火', '水', '木', '金', '土'],
+                      altField: "#myPage\\:myForm\\:fromDate",
+                      altFormat: "yy-mm-dd",
+                      dateFormat: "yy/mm/dd"
+               });
+              $( "#toDatePicker" ).datepicker({
+                      altField: "#myPage\\:myForm\\:toDate",
+                      altFormat: "yy-mm-dd",
+                      dateFormat: "yy/mm/dd"
+               });
+      </script>
+    <apex:commandButton value="Show Dates" action="{!showDates}" rerender="myPage"/>
+    </div>
+    </apex:form>
+    <script>
+      if (!Modernizr.inputtypes.date) { //HTML5のinput要素に対応しているか判定
+        //対応していない
+        document.getElementById('{!$Component.myPage.myForm.fromDate}').style.display = "none";
+        document.getElementById('{!$Component.myPage.myForm.toDate}').style.display = "none";
+        document.getElementById('fromDatePicker').style.display = "";
+        document.getElementById('toDatePicker').style.display = "";
+        alert('HTML5対応してないよ');
+      } else {
+        //対応している
+        document.getElementById('{!$Component.myPage.myForm.fromDate}').style.display = "";
+        document.getElementById('{!$Component.myPage.myForm.toDate}').style.display = "";
+        document.getElementById('fromDatePicker').style.display = "none";
+        document.getElementById('toDatePicker').style.display = "none";
+        alert('HTML5対応してるよ');
+      }
+    </script>
+</apex:page>

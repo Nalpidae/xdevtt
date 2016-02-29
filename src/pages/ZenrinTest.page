@@ -1,0 +1,152 @@
+<apex:page controller="SaveMarkerPosition">
+    <meta charset="EUC-JP"/>
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1"/>
+    <script src="https://api.its-mo.com/cgi/loader.cgi?key=JSZ0fb0c76d725f&ver=2.0&api=zdcmap.js&enc=EUC&force=1&alert=1" type="text/javascript"></script>
+    <script type="text/javascript">
+    //<![CDATA[
+        var map, mrk, mkrLatLon, dragging = false, difLat, difLon, timerid;
+    
+        function loadMap(divid) {
+            map = new ZDC.Map(
+                document.getElementById(divid)
+            );
+    
+            defaultLatLon = new ZDC.LatLon({!lat}, {!lon});
+
+            /* マーカを作成 */
+            mrk = new ZDC.Marker(
+                defaultLatLon,{
+                    color: ZDC.MARKER_COLOR_ID_YELLOW_L
+                }
+            );
+    
+            /* マーカを追加 */
+            map.addWidget(mrk);
+    
+            /* 地図にイベントを追加 */
+            ZDC.addListener(map, ZDC.MAP_MOUSEUP, onMouseUp);
+    
+            /* マーカにイベントを追加 */
+            ZDC.addListener(mrk, ZDC.MARKER_MOUSEDOWN, onMouseDown);
+            ZDC.addListener(mrk, ZDC.MARKER_MOUSEUP, onMouseUp);
+    
+            /* documentにイベントを追加 */
+            ZDC.addDomListener(document, 'mouseup', onMouseUp);
+
+            /* 地図をクリックしたときの動作 */
+            ZDC.addListener(map, ZDC.MAP_CLICK, makeMarker);
+
+            //マーカ初期位置を取得
+            mkrLatLon = mrk.getLatLon();
+        }
+    
+        /* マウスダウンイベント処理 */
+        function onMouseDown() {
+            if(dragging) {
+                return;
+            }
+            /* マウスダウン位置の緯度経度とマーカの緯度経度の差分を保持 */
+            mkrLatLon = mrk.getLatLon();
+            var cLatLon = map.getPointerPosition();
+            difLat = cLatLon.lat - mkrLatLon.lat;
+            difLon = cLatLon.lon - mkrLatLon.lon;
+            dragging = true;
+            /* 30ミリ秒ごとにマーカの緯度経度を変更する */
+            timerid = setInterval(onMouseMove, 30);
+        }
+    
+        /* マーカドラッグ中の処理 */
+        function onMouseMove() {
+            var latlon = map.getPointerPosition();
+            /* マーカの表示位置を設定 */
+            var mkLat = latlon.lat - difLat;
+            var mkLon = latlon.lon - difLon;
+            mkrLatLon = new ZDC.LatLon(mkLat, mkLon);
+            mrk.moveLatLon(mkrLatLon);
+        }
+    
+        /* マウスアップイベント処理 */
+        function onMouseUp() {
+            if(dragging) {
+                dragging = false;
+                /* タイマーをクリアする */
+                clearInterval(timerid);
+            }
+        }
+        
+        /* マーカーの位置取得*/
+        function getMrkPosition(){
+            if(mkrLatLon.lat && mkrLatLon.lon){
+                alert(mkrLatLon.lat + ':' + mkrLatLon.lon);
+            }
+            else{
+                //alert('マーカー位置のデータがありません');
+                alert(mkrLatLon.lat + ':' + mkrLatLon.lon);
+            }
+        }
+        
+        /* マーカーの位置保存 */
+        function saveMrkPosition(){
+            if(mkrLatLon.lat && mkrLatLon.lon){
+                alert(mkrLatLon.lat + ':' + mkrLatLon.lon);
+                SaveAction(mkrLatLon.lat, mkrLatLon.lon);
+            }
+            return false;
+        }
+
+        /* マーカを削除 */
+        function removeWidget() {
+            map.removeWidget(mrk);
+            mkrLatLon.lat = null;
+            mkrLatLon.lon = null;
+        }
+
+        var cnt = 1;
+        function makeMarker() {
+
+            if (cnt > 30) return;
+
+            /* クリックした地点にマーカを作成 */
+            mrk = new ZDC.Marker(map.getClickLatLon(),{
+                //color: ZDC.MARKER_COLOR_ID_BLUE_S,
+                //number: ZDC['MARKER_NUMBER_ID_' + cnt + '_S']
+                color: ZDC.MARKER_COLOR_ID_YELLOW_L
+            });
+            
+
+            /* マーカを追加 */
+            map.addWidget(mrk);
+            /* マーカにイベントを追加 */
+            ZDC.addListener(mrk, ZDC.MARKER_MOUSEDOWN, onMouseDown);
+            ZDC.addListener(mrk, ZDC.MARKER_MOUSEUP, onMouseUp);
+            cnt++;
+
+        }
+        
+    //]]>
+    </script>
+    <apex:form >
+        <apex:actionFunction name="SaveAction" action="{!SaveData}" rerender="accdata">
+            <apex:param name="lat" assignTo="{!lat}" value=""/>
+            <apex:param name="lon" assignTo="{!lon}" value=""/>
+        </apex:actionFunction>
+        <apex:pageBlock >
+            <apex:pageblockButtons >
+                <apex:commandButton rerender="dummy" onclick="loadMap('{!$Component.ZMap}')" value="地図表示"/>
+                <apex:commandButton rerender="dummy" onclick="getMrkPosition()" value="マーカー位置取得"/>
+                <apex:commandButton rerender="dummy" onclick="saveMrkPosition()" value="マーカー位置保存"/>
+                <apex:commandButton rerender="dummy" onclick="window.open('/{!Acc.Id}',target='_blank')" value="取引先データ表示"/>
+            </apex:pageblockButtons>
+            <input type="button" value="画面上のマーカー削除" onclick="removeWidget();"/>
+            <apex:pageblocksection >
+                <apex:outputpanel layout="block" id="accdata">
+                    <apex:outputField value="{!Acc.Name}"/>
+                    <apex:outputField value="{!Acc.geo__Latitude__s}"/>
+                    <apex:outputField value="{!Acc.geo__Longitude__s}"/>
+                </apex:outputpanel>
+            </apex:pageblocksection>
+            <apex:outputpanel layout="block" id="ZMap" style="border:1px solid #777777; width:500px; height:300px;">
+            </apex:outputpanel>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,19 @@
+{
+    "username": "xdevtt@xdevtt.co.jp", 
+    "environment": "developer", 
+    "project_name": "xdevtt", 
+    "workspace": "/Users/nalln/Developer/Workspace", 
+    "org_url": "", 
+    "namespace": "tt8", 
+    "id": "FJRC13B5EC29JYJE9Z3YXFMBL3V8FYFU", 
+    "metadata_container": "1dc10000000Cx4DAAS", 
+    "subscription": [
+        "ApexClass", 
+        "ApexComponent", 
+        "ApexPage", 
+        "ApexTrigger", 
+        "CustomObject", 
+        "Profile", 
+        "StaticResource"
+    ]
+}

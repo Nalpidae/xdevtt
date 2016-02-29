@@ -1,0 +1,18 @@
+<apex:page controller="C_CheckIn" action="{!init}">
+  <apex:form >
+    <apex:pageBlock >
+        <apex:pageBlockButtons >
+                <apex:commandButton action="{!save}" value="チェックイン"/>
+                <apex:commandButton action="{!cancel}" value="キャンセル"/>
+        </apex:pageBlockButtons>
+        <apex:pageBlockSection >
+            <apex:inputField value="{!checkin.CheckinShaName__c}"/>
+            <apex:inputField value="{!checkin.Location__Latitude__s}"/>
+            <apex:inputField value="{!checkin.Location__Longitude__s}"/>
+            <apex:inputField value="{!checkin.Address__c}"/>
+            <apex:inputField value="{!checkin.LocationName__c}"/>
+            <apex:inputField value="{!checkin.RegDate__c}"/>
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+  </apex:form>
+</apex:page>

@@ -1,0 +1,54 @@
+<apex:page >
+
+<script type="text/javascript">
+    function openModalWindow(){
+        var url = "/home/home.jsp";
+        var windowWidth = 480;
+        var windowHeight = 475;
+        var x_point = screen.width / 2 - windowWidth / 2;
+        var y_point = screen.height / 2 - windowHeight / 2;
+        var setTargetReason = window.showModalDialog(url, window, "dialogWidth:" + windowWidth + "px;dialogHeight:" + windowHeight + "px;dialogLeft:" + x_point + "px;dialogTop:" + y_point + "px;scroll:no;");
+    }
+    function openWindowSelf(){
+        var url = "/home/home.jsp";
+        var windowWidth = 480;
+        var windowHeight = 475;
+        var x_point = screen.width / 2 - windowWidth / 2;
+        var y_point = screen.height / 2 - windowHeight / 2;
+        var setTargetReason = window.open(url, "_blank", "dialogWidth:" + windowWidth + "px;dialogHeight:" + windowHeight + "px;dialogLeft:" + x_point + "px;dialogTop:" + y_point + "px;scroll:no;");
+    }
+    function openWindowParent(){
+        var url = "/home/home.jsp";
+        var windowWidth = 480;
+        var windowHeight = 475;
+        var x_point = screen.width / 2 - windowWidth / 2;
+        var y_point = screen.height / 2 - windowHeight / 2;
+        var setTargetReason = window.open(url, "_parent", "dialogWidth:" + windowWidth + "px;dialogHeight:" + windowHeight + "px;dialogLeft:" + x_point + "px;dialogTop:" + y_point + "px;scroll:no;");
+    }
+    function openWindowBlank(){
+        var url = "/home/home.jsp";
+        var windowWidth = 480;
+        var windowHeight = 475;
+        var x_point = screen.width / 2 - windowWidth / 2;
+        var y_point = screen.height / 2 - windowHeight / 2;
+        var setTargetReason = window.open(url, "_blank", "dialogWidth:" + windowWidth + "px;dialogHeight:" + windowHeight + "px;dialogLeft:" + x_point + "px;dialogTop:" + y_point + "px;scroll:no;");
+    }
+    function openWindowNoOption(){
+        var url = "/home/home.jsp";
+        var windowWidth = 480;
+        var windowHeight = 475;
+        var x_point = screen.width / 2 - windowWidth / 2;
+        var y_point = screen.height / 2 - windowHeight / 2;
+        var setTargetReason = window.open(url, "", "");
+    }
+</script>
+
+<apex:form >
+  <apex:commandButton onclick="openModalWindow(); return false;" value="showModalDialog"/>
+  <apex:commandButton onclick="openWindowSelf(); return false;" value="window.open(_self)"/>
+  <apex:commandButton onclick="openWindowParent(); return false;" value="window.open(_parent)"/>
+  <apex:commandButton onclick="openWindowBlank(); return false;" value="window.open(_blank)"/>
+  <apex:commandButton onclick="openWindowNoOption(); return false;" value="window.open(NoOption)"/>
+</apex:form>
+
+</apex:page>

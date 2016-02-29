@@ -1,0 +1,48 @@
+<apex:page controller="ExtractSobject">
+<apex:form >
+   <apex:pageBlock mode="detail">
+
+     <!--
+     <apex:pageBlockSection >
+
+       <apex:pageBlockSectionItem >
+         <apex:outputlabel value="Select Object"/>
+          <apex:selectList value="{!Selectedobject }" size="1">
+            <apex:selectoptions value="{!Selectedobjnames}"></apex:selectoptions>
+            <apex:actionSupport event="onchange" rerender="a"/>
+         </apex:selectList>
+       </apex:pageBlockSectionItem>
+      
+     <apex:pageBlockSectionItem >
+      <apex:outputPanel id="a">
+         <apex:outputLabel value="Object Fields" ></apex:outputLabel>
+             <apex:selectList value="{!Sf}" size="1"> 
+                   <apex:selectOptions value="{!SelectedobjFields}" />
+             </apex:selectList>
+      </apex:outputPanel>
+     </apex:pageBlockSectionItem>   
+   </apex:pageBlockSection>  
+   -->
+
+   <apex:pageBlockSection title="Standard Object" columns="2">
+      <apex:repeat value="{!sobjList}" var="s" id="theRepeatS">
+      <apex:pageBlockSectionItem >
+          <apex:outputLink value="/{!s[1]}" target="_blank">{!s[0]}</apex:outputLink>
+      </apex:pageBlockSectionItem>
+          <!--<apex:outputLink value="/{!s[1]}" target="_blank">{!s[0]}</apex:outputLink><br/>-->
+      </apex:repeat>
+   </apex:pageBlockSection>
+
+   <apex:pageBlockSection title="Custom Object" columns="2">
+      <apex:repeat value="{!cobjList}" var="c" id="theRepeatC">
+      <apex:pageBlockSectionItem >
+          <apex:outputLink value="/{!c[1]}" target="_blank">{!c[0]}</apex:outputLink>
+      </apex:pageBlockSectionItem>
+          <!--<apex:outputLink value="/{!s[1]}" target="_blank">{!s[0]}</apex:outputLink><br/>-->
+      </apex:repeat>
+   </apex:pageBlockSection>
+
+  </apex:pageBlock>
+ </apex:form>
+ 
+</apex:page>

@@ -1,0 +1,50 @@
+<apex:page controller="FollowerFeedController" showHeader="false" sidebar="false">
+<apex:pageBlock title="私のフィード">
+<table style="padding:2px;vertical-align:top;">
+<apex:repeat value="{!myfeedWithComment}" var="f">
+     <!-- display the posts -->
+     <tr>
+     <td>
+         <img src="/userphoto?id={!f.createdById}&v=1&s=T" hieght="48" width="48"/>
+     </td>
+       <td >
+           <p>
+           <a href="/{!f.createdById}">
+           {!SUBSTITUTE(SUBSTITUTE(f.CreatedBy.LastName,'<','&lt;'),'>','&gt;')} 
+           {!SUBSTITUTE(SUBSTITUTE(f.CreatedBy.FirstName,'<','&lt;'),'>','&gt;')}</a>&nbsp;
+           <apex:outputText value=" {!SUBSTITUTE(SUBSTITUTE(f.FeedPost.Body,'<','&lt;'),'>','&gt;')}" id="feedbody"/>
+           <br/> 
+           <apex:outputField value="{!f.CreatedDate}"/>
+           <!-- <apex:outputText value=" {0,date,M/d/yyyy h:mm a z}">
+               <apex:param value="{!f.CreatedDate}" />
+           </apex:outputText> -->
+           </p>
+           <table style="padding:2px;vertical-align:top;">
+           <apex:repeat value="{!f.FeedComments}" var="c">
+               <tr>
+               <td>
+                   <img src="/userphoto?id={!c.CreatedById}&v=1&s=T" hieght="32" width="32"/>
+               </td>
+               <td>
+               <p>
+               <a href="/{!c.CreatedById}">
+               <apex:outputText value="{!SUBSTITUTE(SUBSTITUTE(c.CreatedBy.FirstName,'<','&lt;'),'>','&gt;')}"/>   
+               <apex:outputText value="{!SUBSTITUTE(SUBSTITUTE(c.CreatedBy.LastName,'<','&lt;'),'>','&gt;')}"/>
+               </a>&nbsp;
+               <apex:outputText value=" {!SUBSTITUTE(SUBSTITUTE(c.CommentBody,'<','&lt;'),'>','&gt;')}"/>
+               <br/> 
+               <apex:outputField value="{!c.CreatedDate}"/>
+               <!-- <apex:outputText value=" {0,date,M/d/yyyy h:mm a z}">
+                   <apex:param value="{!c.CreatedDate}" />
+               </apex:outputText> -->
+               </p>
+               </td>
+               </tr>
+           </apex:repeat>
+           </table>
+       </td>
+       </tr>
+</apex:repeat>
+</table>
+</apex:pageBlock>
+</apex:page>

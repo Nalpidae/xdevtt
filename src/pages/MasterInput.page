@@ -1,0 +1,13 @@
+<apex:page controller="MaserInputController">
+  <apex:pageMessages />
+  <apex:form >
+  <apex:pageBlock mode="edit">
+    <apex:pageBlockSection title="入力" columns="1">
+        <apex:inputField value="{!master.MaserID__c}"/>
+        <apex:inputField value="{!master.Mail__c}"/>
+        <apex:inputField value="{!master.Master_LT__c}"/>
+    </apex:pageBlockSection>
+    <apex:commandButton action="{!save}" value="保存" id="saveButton"/>
+  </apex:pageBlock>
+  </apex:form>
+</apex:page>

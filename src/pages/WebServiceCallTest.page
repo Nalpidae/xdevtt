@@ -1,0 +1,24 @@
+<apex:page >
+
+<apex:includeScript value="/soap/ajax/35.0/connection.js"/>
+<apex:includeScript value="/soap/ajax/35.0/apex.js"/>
+
+<script>
+    sforce.connection.sessionId = "{!$Api.Session_ID}";
+    function callWS(){
+        alert('Start');
+        //var contextUser = sforce.apex.execute("myNamespace.myClass", "getContextUserName", {});
+        var ret = sforce.apex.execute('tt8.Hello','getHello',{}); 
+        alert(ret);
+    }
+</script>
+
+<apex:form >
+    <apex:pageBlock >
+     <apex:pageBlockSection id="pb">
+     </apex:pageBlockSection>
+    </apex:pageBlock>
+    <apex:commandButton value="Hello!!!" onclick="return callWS();" rerender="pb"/>
+</apex:form>
+
+</apex:page>

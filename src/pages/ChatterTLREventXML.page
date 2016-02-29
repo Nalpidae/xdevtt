@@ -1,0 +1,15 @@
+<apex:page controller="FollowerFeedController" contentType="application/xml"><?xml version="1.0" encoding="UTF-8"?>
+<data>
+<apex:repeat value="{!myFeed}" var="f">
+    <event 
+        start="{!f.CreatedDate}"
+        title="{!f.CreatedBy.LastName} {!f.CreatedBy.FirstName}"
+        image="/userphoto?id={!f.CreatedById}&v=1&amp;s=T"
+        icon="/userphoto?id={!f.CreatedById}&v=1&amp;s=T"
+        classname="chatter"
+        >
+        {!f.FeedPost.Body}
+        </event>
+</apex:repeat>
+</data>
+</apex:page>

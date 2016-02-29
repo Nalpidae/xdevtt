@@ -104,6 +104,7 @@ public with sharing class AdvancedSearch{
     }
 
     public void createFields(){
+        //aaa
     	System.debug('■ Selectedobject : ' + Selectedobject);
     	Schema.SObjectType objTyp = Schema.getGlobalDescribe().get(Selectedobject);
     	System.debug('■ objTyp : ' + objTyp);

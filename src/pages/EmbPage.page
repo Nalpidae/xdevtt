@@ -1,0 +1,11 @@
+<apex:page standardController="Obj_CheckIn__c">
+  
+  <apex:form >
+      <apex:inputField value="{!Obj_CheckIn__c.aaa__c}"/>
+      <br/>
+      <!--<apex:commandButton action="{!save}" value="保存" target="_parent"/>-->
+      <!--<apex:commandLink value="保存" action="{!save}" target="_parent" styleClass="btn"/>-->
+      <apex:commandLink value="保存" action="{!save}" styleClass="btn"/>
+  </apex:form>
+  
+</apex:page>

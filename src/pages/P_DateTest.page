@@ -29,8 +29,8 @@
     
 </script>
 
-<script src="https://api.its-mo.com/cgi/loader.cgi?key=JSZ0fb0c76d725f&ver=2.0&api=zdcmap.js&enc=EUC&force=1&alert=1" type="text/javascript"></script>
-<script type="text/javascript">
+<!--<script src="https://api.its-mo.com/cgi/loader.cgi?key=JSZ0fb0c76d725f&ver=2.0&api=zdcmap.js&enc=EUC&force=1&alert=1" type="text/javascript"></script>-->
+<!--<script type="text/javascript">
 //<![CDATA[
         /* 東京 */
         var map,
@@ -46,11 +46,11 @@
             );
         };
     //]]>
-    </script>
+    </script>-->
 
-    <script type="text/javascript">
+    <!--<script type="text/javascript">
     window.sfdcPage.appendToOnloadQueue(function() { loadMap() });
-    </script>
+    </script>-->
 
 <apex:form id="form">
     <apex:pageBlock id="pb">
@@ -86,7 +86,7 @@
     
     <!--<apex:commandButton value="soqlTest" onclick="return soqlTest();" rerender=""/>-->
     
-    <div id="ZMap" style="border:1px solid #777777; width:500px; height:300px; position:absolute;"></div>
+    <!--<div id="ZMap" style="border:1px solid #777777; width:500px; height:300px; position:absolute;"></div>-->
     
     <select title="都道府県検索" class="chzn-select">
           <option value=""></option> 

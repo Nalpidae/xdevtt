@@ -1,0 +1,22 @@
+<apex:page standardController="Contact" standardstylesheets="true"
+  showheader="true">
+  <apex:form >
+    <apex:pageBlock mode="maindetail">
+      <apex:pageBlockButtons >
+        <apex:commandButton action="{!edit}" id="editButton" value="Edit" />
+        <apex:commandButton action="{!save}" id="saveButton" value="Save" />
+        <apex:commandButton onclick="resetInlineEdit()" id="cancelButton"
+          value="Cancel" />
+      </apex:pageBlockButtons>
+      <apex:pageBlockSection columns="3">
+        <apex:outputField value="{!contact.lastname}"/>
+        <apex:outputField value="{!contact.accountId}" />
+        <apex:outputField value="{!contact.phone}">
+          <apex:inlineEditSupport showOnEdit="saveButton, cancelButton"
+            hideOnEdit="editButton" event="ondblclick"
+            resetFunction="resetInlineEdit" />
+          </apex:outputfield>
+      </apex:pageBlockSection>
+    </apex:pageBlock>
+  </apex:form>
+</apex:page>

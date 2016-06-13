@@ -1,0 +1,18 @@
+<apex:page controller="C_Datetest">
+<apex:form >
+<apex:pageBlock >
+<apex:pageBlockSection title="Span Entire Page" columns="1" collapsible="true" >
+
+    <apex:pageBlockSectionItem dataStyle="text-align:center; width: 50%; max-width: 55%;">﻿﻿
+
+        <apex:inputField value="{!chkin.RegDate__c}"/>
+    </apex:pageBlockSectionItem>
+    <apex:pageBlockSectionItem dataStyle="text-align:center; width: 50%; max-width: 55%;">﻿
+
+        <apex:inputField value="{!chkin.RegDate__c}"/>
+    </apex:pageBlockSectionItem>﻿
+
+</apex:pageBlockSection>
+</apex:pageBlock>
+</apex:form>
+</apex:page>

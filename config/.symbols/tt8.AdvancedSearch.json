@@ -193,32 +193,12 @@
             "name": "tmp"
         }, 
         {
-            "type": "SObjectType", 
-            "modifiers": [], 
-            "references": [], 
-            "location": {
-                "column": 25, 
-                "line": 108
-            }, 
-            "name": "objTyp"
-        }, 
-        {
-            "type": "DescribeSObjectResult", 
-            "modifiers": [], 
-            "references": [], 
-            "location": {
-                "column": 31, 
-                "line": 110
-            }, 
-            "name": "objDef"
-        }, 
-        {
             "type": "Map", 
             "modifiers": [], 
             "references": [], 
             "location": {
-                "column": 35, 
-                "line": 111
+                "column": 43, 
+                "line": 113
             }, 
             "name": "fields"
         }, 
@@ -228,7 +208,7 @@
             "references": [], 
             "location": {
                 "column": 26, 
-                "line": 115
+                "line": 117
             }, 
             "name": "f"
         }

@@ -58,7 +58,7 @@ public with sharing class AdvancedSearch{
             //options.add(new SelectOption(st.getDescribe().getName(),st.getDescribe().getName()));
             //options.add(new SelectOption(st.getDescribe().getName(),st.getDescribe().getLabel() + '[' + st.getDescribe().getKeyPrefix() + ']'));
 
-            if(st.getDescribe().getKeyPrefix() != null){
+            if(st.getDescribe().getKeyPrefix() != null && st.getDescribe().isCustom()){
                 //List<String> tmp = new List<String>();
                 //tmp.add(st.getDescribe().getLabel());
                 //tmp.add(st.getDescribe().getKeyPrefix());
@@ -106,10 +106,11 @@ public with sharing class AdvancedSearch{
     public void createFields(){
         //aaa
     	System.debug('■ Selectedobject : ' + Selectedobject);
-    	Schema.SObjectType objTyp = Schema.getGlobalDescribe().get(Selectedobject);
-    	System.debug('■ objTyp : ' + objTyp);
-        DescribeSObjectResult objDef = objTyp.getDescribe();
-        Map<String, SObjectField> fields = objDef.fields.getMap();
+    	//Schema.SObjectType objTyp = Schema.getGlobalDescribe().get(Selectedobject);
+    	//System.debug('■ objTyp : ' + objTyp);
+        //DescribeSObjectResult objDef = objTyp.getDescribe();
+        //Map<String, SObjectField> fields = objDef.fields.getMap();
+        Map <String, Schema.SObjectField> fields = Schema.getGlobalDescribe().get(Selectedobject).getDescribe().fields.getMap();
 
         //objfieldlist = fields.values();
 
